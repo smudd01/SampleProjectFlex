@@ -2,7 +2,7 @@
 import corp.flex.sid.CommonTasks
 
 pipeline{
-    agent none
+    agent any
 
     stages {
       stage('Setup') {
