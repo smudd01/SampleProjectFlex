@@ -4,7 +4,7 @@ Description: My API Gateway and Lambda function
 Parameters:
   apiGatewayName:
     Type: String
-    Default: my-api
+    Default: my-api-temp
   apiGatewayStageName:
     Type: String
     AllowedPattern: "[a-z0-9]+"
