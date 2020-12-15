@@ -13,7 +13,7 @@ pipeline {
       }
       stage('Deploy') {
          steps {
-               sh "aws cloudformation deploy --stack-name tempapigateway --template-body file://infrastructure/cloudformation/APIGateway/apigateway.yml --capabilities CAPABILITY_NAMED_IAM --region 'us-east-1'"
+               sh "aws cloudformation deploy --template /infrastructure/cloudformation/APIGateway/apigateway.yml --stack-name tempapigateway --capabilities CAPABILITY_NAMED_IAM--region 'us-east-1'"
          } 
       }
    }
