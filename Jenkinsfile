@@ -1,31 +1,20 @@
 pipeline {
-         agent any
-         stages {
-                 stage('Build') {
-                 steps {
-                     echo 'Hi, GeekFlare. Starting to build the App.'
-                 }
-                 }
-                 stage('Test') {
-                 steps {
-                    echo 'Do you want to proceed?'
-                 }
-                 }
-                 stage('Deploy') {
-                 parallel { 
-                            stage('Deploy start ') {
-                           steps {
-                                echo "Start the deploy .."
-                           } 
-                           }
-                            
-                           }
-                           }
-                 stage('Prod') {
-                     steps {
-                                echo "App is Prod Ready"
-                              }
-                 
-              }
-}
+   agent any
+   stages {
+      stage('Build') {
+         steps {
+            echo 'Building'
+         }
+      }
+      stage('Test') {
+         steps {
+            echo 'Unit testing'
+         }
+      }
+      stage('Deploy') {
+         steps {
+               sh "aws cloudformation deploy --template /infrastructure/cloudformation/APIGateway/apigateway.yml --stack-name tempapigateway --capabilities CAPABILITY_NAMED_IAM --region 'us-east-1'"
+         } 
+      }
+   }
 }
