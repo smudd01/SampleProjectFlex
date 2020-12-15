@@ -15,7 +15,7 @@ Parameters:
   lambdaFunctionName:
     Type: String
     AllowedPattern: "[a-zA-Z0-9]+[a-zA-Z0-9-]+[a-zA-Z0-9]+"
-    Default: my-function
+    Default: myTempFunction
 
 Resources:
   apiGateway:
@@ -26,14 +26,30 @@ Resources:
         Types:
           - REGIONAL
       Name: !Ref apiGatewayName
-
+  ApiGatewayResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt apiGateway.RootResourceId
+      PathPart: 'tempCalcAPI'
+      RestApiId: !Ref apiGateway
   apiGatewayRootMethod:
     Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: NONE
-      HttpMethod: !Ref apiGatewayHTTPMethod
+      HttpMethod: POST
       Integration:
         IntegrationHttpMethod: POST
+        IntegrationResponses:
+          - ResponseTemplates:
+              application/json: "{\"message\": \"OK\"}"
+            SelectionPattern: '2\d{2}'
+            StatusCode: 200
+          - ResponseTemplates:
+              application/json: "{\"message\": \"Internal Server Error\"}"
+            SelectionPattern: '5\d{2}'
+            StatusCode: 500
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
         Type: AWS_PROXY
         Uri: !Sub
           - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations
@@ -54,7 +70,8 @@ Resources:
     Properties:
       Code:
         ZipFile: |
-          def handler(event,context):
+          import json
+          def lambda_handler(event,context):
             # TODO implement
             data = json.dumps(event)
             print("data to print",data)
@@ -68,7 +85,7 @@ Resources:
                return {"body": "incorrect"}
       Description: Example Lambda function
       FunctionName: !Ref lambdaFunctionName
-      Handler: index.handler
+      Handler: lambda_function.lambda_handler
       MemorySize: 128
       Role: !GetAtt lambdaIAMRole.Arn
       Runtime: python3.8
